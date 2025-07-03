@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Gaussdb
@@ -76,8 +77,49 @@ namespace Gaussdb
                 return;
             }
             var usersMessage = Message.FromJson<UsersMessage>(message.jsons);
+            if (usersMessage == null)
+            {
+                Utils.PrintError("Failed to parse UsersMessage from jsons.");
+                return;
+            }
             // 查找用户
-            
+            if (SqlSugar.Instance.db != null)
+            {
+                var user = await SqlSugar.Instance.db.Queryable<yangyw_design_users>()
+                    .Where(u => u.yyw_username == usersMessage.username)
+                    .FirstAsync();
+                if (user == null || user.yyw_password != usersMessage.password)
+                {
+                    var userNotFoundMessage = new Message
+                    {
+                        type = MessageType.Login,
+                        status = MessageType.Exception,
+                        content = "User not found or password incorrect."
+                    };
+                    string json = userNotFoundMessage.Tojson();
+                    await SqlServer.Instance.SendText(json, webSocket);
+                }
+                else
+                { // 找到用户
+                    if(user.yyw_password == usersMessage.password)
+                    {
+                        var loginUser = new UsersMessage()
+                        {
+                            username = user.yyw_username,
+                            role = user.yyw_role
+                        };
+                        var loginSuccessMessage = new Message
+                        {
+                            type = MessageType.Login,
+                            status = MessageType.Success,
+                            content = "Login successful.",
+                            jsons = JsonSerializer.Serialize(loginUser)
+                        };
+                        string json = loginSuccessMessage.Tojson();
+                        await SqlServer.Instance.SendText(json, webSocket);
+                    }
+                }
+            }
         }
         private async Task OnRegister(WebSocket webSocket, string clientId, Message message)
         {

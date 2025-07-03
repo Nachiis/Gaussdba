@@ -34,6 +34,7 @@ public class Message
         return JsonSerializer.Serialize(this);
     }
 
+
     public static T? FromJson<T>(string json)
     {
         return JsonSerializer.Deserialize<T>(json);
