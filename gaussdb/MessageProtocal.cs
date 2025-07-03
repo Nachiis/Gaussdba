@@ -43,7 +43,7 @@ public class Message
 [Serializable]
 public class UsersMessage
 {
-    public string? username;
-    public string? password;
-    public int role;
+    public string? username { get; set; }
+    public string? password { get; set; }
+    public short role { get; set; }
 }

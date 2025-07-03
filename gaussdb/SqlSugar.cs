@@ -29,8 +29,8 @@ namespace Gaussdb
             {
                 ConnectionConfig connectionConfig = new ConnectionConfig()
                 {
-                    ConnectionString = $"Host={Host};Port={Port};Username={UserName};Password={Password};Database={Database};SearchPath={SearchPath}",
-                    DbType = DbType.PostgreSQL,
+                    ConnectionString = $"Host={Host};Port={Port};Username={UserName};Password={Password};Database={Database};SearchPath={SearchPath};No Reset On Close=true;",
+                    DbType = DbType.GaussDB,
                     IsAutoCloseConnection = true,
                     InitKeyType = InitKeyType.Attribute,
                 };

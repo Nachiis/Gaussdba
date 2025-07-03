@@ -117,7 +117,7 @@ namespace Gaussdb
                 else
                 {
                     // 创建新用户
-                    var newUser = new yangyw_design_users
+                    var newUser = new yangyw_design_users()
                     {
                         yyw_username = usersMessage.username,
                         yyw_password = usersMessage.password,
@@ -139,7 +139,7 @@ namespace Gaussdb
                     }
                     catch (Exception ex)
                     {
-                        Utils.PrintError($"Error registering user {usersMessage.username}: {ex.Message}");
+                        Utils.PrintError(ex);
                         // 向客户端发送错误消息
                         var errorMessage = new Message
                         {
